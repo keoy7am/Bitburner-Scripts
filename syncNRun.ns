@@ -1,12 +1,13 @@
 /* 
-RAM Usage: 6.6GB
+RAM Usage: 6.65GB
 Sample: run syncNRun.ns early-hack.ns n00dles
 Sample: run syncNRun.ns hack-locally.script
 */
-let cpoiedSrv = ["home"];
+let cpoiedSrv = [];
 
 export async function main(ns) {
     try {
+        cpoiedSrv.push("home");
         ns.print("starting copy file: " + ns.args[0]);
         await copyFileToTargets(ns, ns.args[0], ns.scan());
         ns.print("finished job now.");
@@ -14,7 +15,8 @@ export async function main(ns) {
         ns.print("main program got error => " + ex);
     }
     finally {
-        await ns.sleep(60000); // for check log.
+        cpoiedSrv = [];
+        await ns.sleep(10000); // for check log.
         ns.exit();
     }
 }
