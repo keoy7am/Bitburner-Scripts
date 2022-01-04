@@ -1,5 +1,5 @@
 /* 
-RAM Usage: 6.65GB
+RAM Usage: 6.7GB
 Sample: run syncNRun.ns early-hack.ns n00dles
 Sample: run syncNRun.ns hack-locally.script
 */
@@ -71,6 +71,9 @@ function tryToAutoHack(ns, host) {
             }
             if (ns.fileExists("FTPCrack.exe", "home")) {
                 ns.ftpcrack(host);
+            }
+            if (ns.fileExists("relaySMTP.exe", "home")) {
+                ns.relaysmtp(host);
             }
             ns.nuke(host);
             ns.installBackdoor(host);
