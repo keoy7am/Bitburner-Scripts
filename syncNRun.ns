@@ -22,10 +22,11 @@ export async function main(ns) {
 async function copyFileToTargets(ns, fileName, srvs) {
 	for (var i = 0; i < srvs.length; i++) {
 		if (!cpoiedSrv.includes(srvs[i])) {
-			await tryToAutoHack(ns, srvs[1]);
+			tryToAutoHack(ns, srvs[1]);
 			await copyFileToTarget(ns, fileName, srvs[i]);
-			if (ns.scan(srvs[i]).length > 0) {
-				await copyFileToTargets(ns, fileName, ns.scan(srvs[i]));
+			var newSrvs = ns.scan(srvs[i]);
+			if (newSrvs.length > 0) {
+				await copyFileToTargets(ns, fileName, newSrvs);
 			}
 		}
 	}
@@ -46,7 +47,7 @@ async function copyFileToTarget(ns, fileName, host) {
 			var need_ram = await ns.getScriptRam(fileName);
 			var run_count = max_ram / need_ram;
 			if (ns.args[1] !== undefined && ns.args[1].length > 0) {
-				ns.exec(fileName, host ,run_count, ns.args[1]);
+				ns.exec(fileName, host, run_count, ns.args[1]);
 			} else {
 				ns.exec(fileName, host, run_count);
 			}
@@ -59,19 +60,17 @@ async function copyFileToTarget(ns, fileName, host) {
 	}
 }
 
-async function tryToAutoHack(ns, host) {
+function tryToAutoHack(ns, host) {
 	try {
 		if (!ns.hasRootAccess(host)) {
-			ns.print("--- hacking to " + srvs[1] + " ---");
-			if (fileExists("BruteSSH.exe", "home")) {
-				brutessh(target);
+			ns.print("--- hacking to " + host + " ---");
+			if (ns.fileExists("BruteSSH.exe", "home")) {
+				ns.brutessh(host);
 			}
-			nuke(target);
-			if(ns.hasRootAccess(host)){
-				ns.installBackdoor();
-			}
+			ns.nuke(host);
+			ns.installBackdoor(host);
 		}
 	} catch (ex) {
-		ns.print("tryToAutoHack failed.");
+		ns.print("tryToAutoHack failed. ex:" + ex);
 	}
 }
