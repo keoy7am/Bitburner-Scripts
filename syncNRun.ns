@@ -74,6 +74,9 @@ function tryToAutoHack(ns, host) {
             if (ns.fileExists("HTTPWorm.exe", "home")) {
                 ns.httpworm(host);
             }
+            if (ns.fileExists("SQLInject.exe", "home")) {
+                ns.sqlinject(host);
+            }
             ns.nuke(host);
             ns.installBackdoor(host);
         }
