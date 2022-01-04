@@ -24,7 +24,7 @@ export async function main(ns) {
 async function copyFileToTargets(ns, fileName, srvs) {
     for (var i = 0; i < srvs.length; i++) {
         if (!cpoiedSrv.includes(srvs[i])) {
-            tryToAutoHack(ns, srvs[1]);
+            tryToAutoHack(ns, srvs[i]);
             await copyFileToTarget(ns, fileName, srvs[i]);
             var newSrvs = ns.scan(srvs[i]);
             if (newSrvs.length > 0) {
