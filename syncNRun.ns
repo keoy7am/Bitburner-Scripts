@@ -1,0 +1,77 @@
+/* 
+RAM Usage: 6.6GB
+Sample: run syncNRun.ns early-hack.ns n00dles
+Sample: run syncNRun.ns hack-locally.script
+*/
+let cpoiedSrv = ["home"];
+
+export async function main(ns) {
+	try {
+		ns.print("starting copy file: " + ns.args[0]);
+		await copyFileToTargets(ns, ns.args[0], ns.scan());
+		ns.print("finished job now.");
+	} catch {
+
+	}
+	finally {
+		await ns.sleep(60000); // for check log.
+		ns.exit();
+	}
+}
+
+async function copyFileToTargets(ns, fileName, srvs) {
+	for (var i = 0; i < srvs.length; i++) {
+		if (!cpoiedSrv.includes(srvs[i])) {
+			await tryToAutoHack(ns, srvs[1]);
+			await copyFileToTarget(ns, fileName, srvs[i]);
+			if (ns.scan(srvs[i]).length > 0) {
+				await copyFileToTargets(ns, fileName, ns.scan(srvs[i]));
+			}
+		}
+	}
+}
+
+async function copyFileToTarget(ns, fileName, host) {
+	try {
+		if (ns.hasRootAccess(host)) {
+			ns.print("--- copy to " + host + " ---")
+			ns.killall(host);
+			/*
+			if (ns.isRunning(fileName)) {
+				ns.scriptKill(fileName);
+			}
+			*/
+			await ns.scp(fileName, host);
+			var max_ram = await ns.getServerMaxRam(host);
+			var need_ram = await ns.getScriptRam(fileName);
+			var run_count = max_ram / need_ram;
+			if (ns.args[1] !== undefined && ns.args[1].length > 0) {
+				ns.exec(fileName, host ,run_count, ns.args[1]);
+			} else {
+				ns.exec(fileName, host, run_count);
+			}
+		}
+	} catch (ex) {
+		ns.print("copy " + fileName + " failed. ex:" + ex);
+	} finally {
+		cpoiedSrv.push(host);
+		ns.print("--- Done! ---")
+	}
+}
+
+async function tryToAutoHack(ns, host) {
+	try {
+		if (!ns.hasRootAccess(host)) {
+			ns.print("--- hacking to " + srvs[1] + " ---");
+			if (fileExists("BruteSSH.exe", "home")) {
+				brutessh(target);
+			}
+			nuke(target);
+			if(ns.hasRootAccess(host)){
+				ns.installBackdoor();
+			}
+		}
+	} catch (ex) {
+		ns.print("tryToAutoHack failed.");
+	}
+}
