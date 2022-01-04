@@ -39,11 +39,6 @@ async function copyFileToTarget(ns, fileName, host) {
         if (ns.hasRootAccess(host)) {
             ns.print("--- copy to " + host + " ---")
             ns.killall(host);
-            /*
-            if (ns.isRunning(fileName)) {
-                ns.scriptKill(fileName);
-            }
-            */
             await ns.scp(fileName, host);
             var max_ram = await ns.getServerMaxRam(host);
             var need_ram = await ns.getScriptRam(fileName);
@@ -53,6 +48,7 @@ async function copyFileToTarget(ns, fileName, host) {
             } else {
                 ns.exec(fileName, host, run_count);
             }
+            await ns.sleep(1000);
         }
     } catch (ex) {
         ns.print("copy " + fileName + " failed. ex:" + ex);
@@ -74,6 +70,9 @@ function tryToAutoHack(ns, host) {
             }
             if (ns.fileExists("relaySMTP.exe", "home")) {
                 ns.relaysmtp(host);
+            }
+            if (ns.fileExists("HTTPWorm.exe", "home")) {
+                ns.httpworm(host);
             }
             ns.nuke(host);
             ns.installBackdoor(host);
