@@ -4,7 +4,7 @@ Sample: run syncNRun.ns early-hack.ns n00dles
 Sample: run syncNRun.ns hack-locally.script
 */
 let cpoiedSrv = [];
-let purchasedSrvPrefix = "Srv";
+let purchasedSrvPrefix = "srv";
 
 export async function main(ns) {
     try {
@@ -24,7 +24,7 @@ export async function main(ns) {
 
 async function copyFileToTargets(ns, fileName, srvs) {
     for (var i = 0; i < srvs.length; i++) {
-        if (!cpoiedSrv.includes(srvs[i]) && !srvs[i].startsWith(purchasedSrvPrefix)) {
+        if (!cpoiedSrv.includes(srvs[i]) && !srvs[i].toLowerCase().startsWith(purchasedSrvPrefix)) {
             tryToAutoHack(ns, srvs[i]);
             await copyFileToTarget(ns, fileName, srvs[i]);
             var newSrvs = ns.scan(srvs[i]);
