@@ -1,0 +1,63 @@
+/* 
+RAM Usage: 6.6GB
+Usage: run customSyncNRun.ns early-hack.ns purchasedSrv target
+Sample: run customSyncNRun.ns early-hack.ns srv1 n00dles
+*/
+let isRunning = false;
+
+export async function main(ns) {
+    try {
+        var fileName = ns.args[0];
+        var host = ns.args[1];
+        var target = ns.args[2];
+
+        ns.print("starting copy file: " + fileName);
+        tryToAutoHack(ns, host);
+        tryToAutoHack(ns, target);
+        if (ns.hasRootAccess(host)) {
+            ns.print("--- copy to " + host + " ---")
+            ns.killall(host);
+            await ns.scp(fileName, host);
+            var max_ram = await ns.getServerMaxRam(host);
+            var need_ram = await ns.getScriptRam(fileName);
+            var run_count = max_ram / need_ram;
+            ns.exec(fileName, host, run_count, target);
+            isRunning = true;
+        }
+
+        ns.print("finished job now.");
+    } catch (ex) {
+        ns.print("main program got error => " + ex);
+    }
+    finally {
+        await ns.sleep(3000); // for check log.
+        ns.exit();
+    }
+}
+
+function tryToAutoHack(ns, host) {
+    try {
+        if (!ns.hasRootAccess(host)) {
+            ns.print("--- hacking to " + host + " ---");
+            if (ns.fileExists("BruteSSH.exe", "home")) {
+                ns.brutessh(host);
+            }
+            if (ns.fileExists("FTPCrack.exe", "home")) {
+                ns.ftpcrack(host);
+            }
+            if (ns.fileExists("relaySMTP.exe", "home")) {
+                ns.relaysmtp(host);
+            }
+            if (ns.fileExists("HTTPWorm.exe", "home")) {
+                ns.httpworm(host);
+            }
+            if (ns.fileExists("SQLInject.exe", "home")) {
+                ns.sqlinject(host);
+            }
+            ns.nuke(host);
+            ns.installBackdoor(host);
+        }
+    } catch (ex) {
+        ns.print("tryToAutoHack failed. ex:" + ex);
+    }
+}
